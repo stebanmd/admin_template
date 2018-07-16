@@ -1,0 +1,12 @@
+﻿
+<h1>Home</h1>
+
+
+
+<p>Usuário já está logado</p>
+<br />
+<strong>Name: </strong>@User.Identity.Name
+<br />
+<form method="post" asp-controller="Account" asp-action="Logout">
+    <button type="submit">Log out</button>
+</form>
