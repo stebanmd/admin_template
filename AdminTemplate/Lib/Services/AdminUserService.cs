@@ -12,10 +12,9 @@ namespace Lib.Services
     {
         public AdminUser GetByEmail(string email)
         {
-            return new AdminUserRepository().GetUserByEmail(email);
-        }
+            return new AdminUserRepository().GetUserByEmail(email);        }
 
-        public List<AdminUser> GetUsers => new AdminUserRepository().Get();
+        public List<AdminUser> GetUsers => new AdminUserRepository().Get().ToList();
 
         public AdminUser Get(int id) => new AdminUserRepository().GetById(id);
 

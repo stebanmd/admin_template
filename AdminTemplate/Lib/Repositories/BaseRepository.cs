@@ -1,7 +1,7 @@
 ﻿using Dapper;
 using Lib.Entities;
+using Lib.Utils;
 using System.Collections.Generic;
-using System.Configuration;
 using System.Data.SqlClient;
 
 namespace Lib.Repositories
@@ -12,39 +12,75 @@ namespace Lib.Repositories
 
         protected SqlConnection CreateConnection()
         {
-            if (_con == null && ConfigurationManager.ConnectionStrings.Count > 0)
+            if (_con == null)
             {
-                _con = new SqlConnection(ConfigurationManager.ConnectionStrings[0].ToString());
+                _con = new SqlConnection();
             }
             return _con;
         }
 
         public T Insert(T entity)
         {
+            string sql = EntityToSqlUtil.GetInsertQuery(entity);
+            using (var con = CreateConnection())
+            {
+                con.Open();
+                entity.Id = con.QueryFirst<int>(sql, entity);
+                con.Close();
+            }
             return entity;
         }
 
-        public T Update(T entity)
+        public bool Update(T entity)
         {
-            return entity;
+            string sql = EntityToSqlUtil.GetUpdateQuery(entity);
+            int affected = 0;
+            using (var con = CreateConnection())
+            {
+                con.Open();
+                affected = con.Execute(sql, entity);
+                con.Close();
+            }
+            return affected > 0;
         }
 
-        public void Delete(T entity)
+        public bool Delete(T entity)
         {
+            string sql = EntityToSqlUtil.GetDeleteQuery<T>();
+            int affected = 0;
+            using (var con = CreateConnection())
+            {
+                con.Open();
+                affected = con.Execute(sql, entity);
+                con.Close();
+            }
+            return affected > 0;
         }
 
         public T GetById(int id)
         {
-            return null;
+            string sql = EntityToSqlUtil.GetSelectByIdQuery<T>();
+            T result;
+            using (var con = CreateConnection())
+            {
+                con.Open();
+                result = con.QueryFirstOrDefault<T>(sql, new { Id = id });
+                con.Close();
+            }
+            return result;
         }
 
-        public List<T> Get(int skip = 0, int take = 0, bool includeBigField = false)
+        public IEnumerable<T> Get(int skip = 0, int take = -1, bool includeBase64Field = false)
         {
-            return null;
+            string sql = EntityToSqlUtil.GetSelectAllQuery<T>(skip, take, includeBase64Field);
+            IEnumerable<T> result;
+            using (var con = CreateConnection())
+            {
+                con.Open();
+                result = con.Query<T>(sql, new { Skip = skip, Take = take });
+                con.Close();
+            }
+            return result;
         }
-
     }
-
-
-
 }
