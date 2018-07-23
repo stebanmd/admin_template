@@ -1,6 +1,6 @@
 ﻿namespace Lib.Entities
 {
-    internal class AdminUser : BaseEntity
+    public class AdminUser : BaseEntity
     {
         public int ProfileId { get; set; }
         public string Name { get; set; }

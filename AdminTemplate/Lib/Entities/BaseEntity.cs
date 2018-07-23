@@ -2,7 +2,7 @@
 
 namespace Lib.Entities
 {
-    internal abstract class BaseEntity
+    public abstract class BaseEntity
     {
         public int Id { get; set; }
 

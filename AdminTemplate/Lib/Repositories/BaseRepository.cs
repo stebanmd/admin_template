@@ -1,11 +1,24 @@
-﻿using Lib.Entities;
-using System;
+﻿using Dapper;
+using Lib.Entities;
 using System.Collections.Generic;
+using System.Configuration;
+using System.Data.SqlClient;
 
 namespace Lib.Repositories
 {
     internal class BaseRepository<T> where T : BaseEntity
     {
+        private SqlConnection _con = null;
+
+        protected SqlConnection CreateConnection()
+        {
+            if (_con == null && ConfigurationManager.ConnectionStrings.Count > 0)
+            {
+                _con = new SqlConnection(ConfigurationManager.ConnectionStrings[0].ToString());
+            }
+            return _con;
+        }
+
         public T Insert(T entity)
         {
             return entity;
@@ -29,9 +42,9 @@ namespace Lib.Repositories
         {
             return null;
         }
-        
+
     }
 
 
-    
+
 }

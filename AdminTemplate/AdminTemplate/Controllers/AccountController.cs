@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using Lib.Services;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
@@ -39,6 +40,9 @@ namespace AdminTemplate.Controllers
         {
             if (string.IsNullOrEmpty(email))
                 return RedirectToAction(nameof(Login));
+
+
+            var adminUser = new AdminUserService().GetByEmail(email);
 
             var identity = new ClaimsIdentity(new[]
             {
