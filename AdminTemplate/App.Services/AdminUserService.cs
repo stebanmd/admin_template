@@ -4,6 +4,8 @@ using App.Services.Dtos;
 using App.Services.Interfaces;
 using System;
 using System.Collections.Generic;
+using System.Security.Cryptography;
+using System.Text;
 
 namespace App.Services
 {
@@ -86,6 +88,38 @@ namespace App.Services
             {
                 throw;
             }
+        }
+
+        public AdminUserDto SignIn(string email, string password)
+        {
+            AdminUserDto result = null;
+            try
+            {
+                result = GetByEmail(email);
+                if (result != null)
+                {
+                    if (!VerifyPassword(result.Password, password))
+                        result = null;
+                }
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+
+            return result;
+        }
+
+        private bool VerifyPassword(string hash, string password)
+        {
+            return (hash == HashPass(password));
+        }
+
+        private string HashPass(string pass)
+        {
+            SHA256CryptoServiceProvider cryptoTransform = new SHA256CryptoServiceProvider();
+            string hash = BitConverter.ToString(cryptoTransform.ComputeHash(Encoding.Default.GetBytes(pass))).Replace("-", "");
+            return hash.ToLower();
         }
     }
 }

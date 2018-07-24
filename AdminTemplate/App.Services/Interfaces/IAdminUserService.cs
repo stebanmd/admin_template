@@ -9,6 +9,10 @@ namespace App.Services.Interfaces
     public interface IAdminUserService: ICRUDService<AdminUserDto>
     {
         AdminUserDto GetByEmail(string email);
+
+        AdminUserDto SignIn(string email, string password);
+
+
     }
 
     public interface ICRUDService<T>

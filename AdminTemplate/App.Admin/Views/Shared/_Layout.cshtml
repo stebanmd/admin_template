@@ -1,4 +1,13 @@
-﻿<!DOCTYPE html>
+﻿@{
+    var userImg = User.Claims.FirstOrDefault(a => a.Type == "Photo")?.Value;
+    var userName = User.Claims.FirstOrDefault(a => a.Type == "Name")?.Value;
+    if (userImg == null)
+    {
+        userImg = "/images/default_avatar.png";
+    }
+
+}
+<!DOCTYPE html>
 <html>
 <head>
     <meta charset="utf-8" />
@@ -7,36 +16,18 @@
 
 
     <!-- stylesheets -->
-    <link rel="stylesheet" type="text/css" href="~/css/compiled/theme.css" />
-    <link rel="stylesheet" type="text/css" href="~/css/vendor/animate.css" />
-    <link rel="stylesheet" type="text/css" href="~/css/vendor/brankic.css" />
-    <link rel="stylesheet" type="text/css" href="~/css/vendor/ionicons.min.css" />
-    <link rel="stylesheet" type="text/css" href="~/css/vendor/font-awesome.min.css" />
-    <link rel="stylesheet" type="text/css" href="~/css/vendor/select2.css" />
-    <link rel="stylesheet" type="text/css" href="~/css/vendor/select2-bootstrap.css" />
+    <link rel="stylesheet" type="text/css" href="/css/compiled/theme.css" />
+    <link rel="stylesheet" type="text/css" href="/css/vendor/ionicons.min.css" />
+    <link rel="stylesheet" type="text/css" href="/css/vendor/brankic.css" />
+    <link rel="stylesheet" type="text/css" href="/css/vendor/font-awesome.min.css" />
+
     <!-- javascript -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.0/jquery.min.js"></script>
-    <script src="~/js/bootstrap/bootstrap.min.js"></script>
-    <script src="~/js/vendor/select2.min.js"></script>
-    <script src="~/js/vendor/jquery.validate.min.js"></script>
-    <script src="~/js/vendor/jquery.cookie.js"></script>
-    <script src="~/js/vendor/jquery.maskedinput.js"></script>
-    <script src="~/js/theme.js"></script>
-    <!--[if lt IE 9]>
-      <script src="https://html5shim.googlecode.com/svn/trunk/html5.js"></script>
-    <![endif]-->
+    <script src="/js/bootstrap/bootstrap.min.js"></script>
+    <script src="/js/vendor/jquery.cookie.js"></script>
+    <script src="/js/theme.js"></script>
 
 
-    @*<environment include="Development">
-        <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.css" />
-        <link rel="stylesheet" href="~/css/site.css" />
-    </environment>
-    <environment exclude="Development">
-        <link rel="stylesheet" href="https://ajax.aspnetcdn.com/ajax/bootstrap/3.3.7/css/bootstrap.min.css"
-              asp-fallback-href="~/lib/bootstrap/dist/css/bootstrap.min.css"
-              asp-fallback-test-class="sr-only" asp-fallback-test-property="position" asp-fallback-test-value="absolute" />
-        <link rel="stylesheet" href="~/css/site.min.css" asp-append-version="true" />
-    </environment>*@
 </head>
 <body>
     <div id="wrapper">
@@ -44,21 +35,18 @@
         <div id="sidebar-default" class="main-sidebar">
             <div class="current-user">
                 <a href="index.html" class="name">
-                    <img class="avatar" src="~/images/default_avatar.png" />
-                    <span>
-                        @User.Identity.Name
-                        <i class="fa fa-chevron-down"></i>
-                    </span>
+                    <img class="avatar" src="@userImg" />
+                    <span>@userName<i class="fa fa-chevron-down"></i></span>
                 </a>
                 <ul class="menu">
                     <li>
-                        <a href="Account/ManageAccount">Configurações</a>
+                        <a asp-action="ManageAccount" asp-controller="Account">Configurações</a>
                     </li>
                     <li>
                         <a href="account-support.html">Help / Support</a>
                     </li>
                     <li>
-                        <a href="Account/Logout">Sign out</a>
+                        <a asp-action="Logout" asp-controller="Account">Sign out</a>
                     </li>
                 </ul>
             </div>
@@ -203,7 +191,7 @@
                             <!-- <li><a href="#">3 features added</a></li> -->
                         </ul>
                     </li>
-                    <li><a href="Account/Logout"><i class="ion-log-out"></i></a></li>
+                    <li><a asp-action="Logout" asp-controller="Account"><i class="ion-log-out"></i></a></li>
                 </ul>
             </div>
         </div>
@@ -217,27 +205,6 @@
 
     </div>
 
-    @*<environment include="Development">
-        <script src="~/lib/jquery/dist/jquery.js"></script>
-        <script src="~/lib/bootstrap/dist/js/bootstrap.js"></script>
-        <script src="~/js/site.js" asp-append-version="true"></script>
-    </environment>
-    <environment exclude="Development">
-        <script src="https://ajax.aspnetcdn.com/ajax/jquery/jquery-3.3.1.min.js"
-                asp-fallback-src="~/lib/jquery/dist/jquery.min.js"
-                asp-fallback-test="window.jQuery"
-                crossorigin="anonymous"
-                integrity="sha384-tsQFqpEReu7ZLhBV2VZlAu7zcOV+rXbYlF2cqB8txI/8aZajjp4Bqd+V6D5IgvKT">
-        </script>
-        <script src="https://ajax.aspnetcdn.com/ajax/bootstrap/3.3.7/bootstrap.min.js"
-                asp-fallback-src="~/lib/bootstrap/dist/js/bootstrap.min.js"
-                asp-fallback-test="window.jQuery && window.jQuery.fn && window.jQuery.fn.modal"
-                crossorigin="anonymous"
-                integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa">
-        </script>
-        <script src="~/js/site.min.js" asp-append-version="true"></script>
-    </environment>*@
-
-    @RenderSection("Scripts", required: false)
+   
 </body>
 </html>

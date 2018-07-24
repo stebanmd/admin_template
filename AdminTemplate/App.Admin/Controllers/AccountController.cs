@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System;
 using System.Security.Claims;
 using System.Threading.Tasks;
 
@@ -32,34 +33,43 @@ namespace App.Admin.Controllers
         [HttpPost]
         public IActionResult ForgottenPassword(string email)
         {
-            if (string.IsNullOrEmpty(email))
-                ViewData["send"] = false;
-            else
-                ViewData["send"] = true;
+            if (string.IsNullOrWhiteSpace(email))
+            {
+                ModelState.AddModelError("", "Favor informar o e-mail.");
+            }
+
             return View();
         }
 
         [HttpPost]
         public async Task<IActionResult> Login(string email, string pass)
         {
-            if (string.IsNullOrEmpty(email))
-                return RedirectToAction(nameof(Login));
-
-            var adminUser = service.GetByEmail(email);
-
-            var identity = new ClaimsIdentity(new[]
+            if (string.IsNullOrEmpty(email) || string.IsNullOrEmpty(pass))
             {
-                new Claim(ClaimTypes.Name, adminUser.Name),
-                new Claim(ClaimTypes.Email, email)
-            }, CookieAuthenticationDefaults.AuthenticationScheme);
+                ModelState.AddModelError("", "Favor informar o e-mail e senha");
+                return View();
+            }
 
-            var principal = new ClaimsPrincipal(identity);
+            var adminUser = service.SignIn(email, pass);
+            if (adminUser == null)
+            {
+                ModelState.AddModelError("", "E-mail ou senha inválidos");
+                return View();
+            }
+            else
+            {
+                var claims = new Claim[] {
+                       new Claim("Id", Convert.ToString(adminUser.Id), ClaimValueTypes.Integer),
+                       new Claim("Name", adminUser.Name, ClaimValueTypes.String),
+                       new Claim("Email", adminUser.Email, ClaimValueTypes.String)
+                };
 
-            await HttpContext.SignInAsync(
-                CookieAuthenticationDefaults.AuthenticationScheme,
-                principal);
+                var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+                var principal = new ClaimsPrincipal(identity);
 
-            return RedirectToAction("Index", "Home");
+                await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal);
+                return RedirectToAction("Index", "Home");
+            }
         }
 
         public async Task<IActionResult> Logout()
