@@ -18,7 +18,7 @@ namespace App.API
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            App.IoC.IoCConfiguration.Configure(services);
+            IoC.IoCConfiguration.Configure(services);
 
             services.AddSingleton(Configuration);
             services.AddScoped<Validators.AppValidator>();

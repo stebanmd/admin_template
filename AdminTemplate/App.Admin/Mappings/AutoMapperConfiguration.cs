@@ -1,4 +1,4 @@
-﻿namespace App.Mappings
+﻿namespace App.Admin.Mappings
 {
     public class AutoMapperConfiguration
     {
