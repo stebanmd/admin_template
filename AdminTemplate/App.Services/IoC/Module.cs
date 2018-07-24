@@ -1,6 +1,6 @@
-﻿using System;
+﻿using App.Services.Interfaces;
+using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace App.Services.IoC
 {
@@ -9,7 +9,9 @@ namespace App.Services.IoC
         public static Dictionary<Type, Type> GetTypes()
         {
             var dic = new Dictionary<Type, Type>();
-            dic.Add(typeof(Interfaces.ITodoService), typeof(TodoService));
+
+            dic.Add(typeof(ITodoService), typeof(TodoService));
+            dic.Add(typeof(IAdminUserService), typeof(AdminUserService));
 
             return dic;
         }

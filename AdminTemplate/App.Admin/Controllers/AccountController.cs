@@ -1,14 +1,20 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using App.Services.Interfaces;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace App.Admin.Controllers
 {
     public class AccountController : Controller
     {
-        public AccountController()
-        {
+        private readonly IAdminUserService service;
 
+        public AccountController(IAdminUserService service)
+        {
+            this.service = service;
         }
 
         public IActionResult Login()
@@ -27,7 +33,7 @@ namespace App.Admin.Controllers
         public IActionResult ForgottenPassword(string email)
         {
             if (string.IsNullOrEmpty(email))
-                ViewData["error"] = true;
+                ViewData["send"] = false;
             else
                 ViewData["send"] = true;
             return View();
@@ -39,11 +45,12 @@ namespace App.Admin.Controllers
             if (string.IsNullOrEmpty(email))
                 return RedirectToAction(nameof(Login));
 
-            var adminUser = new AdminUserService().GetByEmail(email);
+            var adminUser = service.GetByEmail(email);
 
             var identity = new ClaimsIdentity(new[]
             {
-                new Claim(ClaimTypes.Name, email),
+                new Claim(ClaimTypes.Name, adminUser.Name),
+                new Claim(ClaimTypes.Email, email)
             }, CookieAuthenticationDefaults.AuthenticationScheme);
 
             var principal = new ClaimsPrincipal(identity);

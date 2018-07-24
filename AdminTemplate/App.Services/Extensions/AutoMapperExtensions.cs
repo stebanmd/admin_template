@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace App.Services.Extensions
+namespace App.Services
 {
     internal static class AutoMapperExtensions
     {
