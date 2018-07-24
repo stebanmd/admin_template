@@ -48,7 +48,6 @@ namespace App.API
         {
             if (env.IsDevelopment())
             {
-                app.UseBrowserLink();
                 app.UseDeveloperExceptionPage();
             }
 

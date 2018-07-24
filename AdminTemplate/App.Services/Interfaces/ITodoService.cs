@@ -7,7 +7,7 @@ namespace App.Services.Interfaces
 {
     public interface ITodoService
     {
-        TodoDto Create(TodoDto todo);
+        TodoDto Create(TodoDto dto);
 
         IEnumerable<TodoDto> List(TodoFilterDto filter);
 
@@ -15,6 +15,6 @@ namespace App.Services.Interfaces
 
         bool Update(TodoDto todo);
 
-        bool Delete(int id);
+        bool Delete(TodoDto dto);
     }
 }

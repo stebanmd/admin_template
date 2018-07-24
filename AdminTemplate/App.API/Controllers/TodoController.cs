@@ -1,11 +1,11 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using System;
-using System.Collections.Generic;
+﻿using App.Extensions;
+using App.Results;
 using App.Services.Dtos;
 using App.Services.Interfaces;
-using App.Extensions;
-using App.Results;
 using App.Validators;
+using Microsoft.AspNetCore.Mvc;
+using System;
+using System.Collections.Generic;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -17,7 +17,7 @@ namespace App.Controllers
         private readonly ITodoService appService;
         private readonly AppValidator validator;
 
-        public TodoController(ITodoService appService, Validators.AppValidator validator)
+        public TodoController(ITodoService appService, AppValidator validator)
         {
             this.appService = appService;
             this.validator = validator;
@@ -119,7 +119,7 @@ namespace App.Controllers
             var result = new GenericResult();
             try
             {
-                result.Success = appService.Delete(id);
+                result.Success = appService.Delete(new TodoDto { Id = id });
                 if (!result.Success)
                     throw new Exception($"Todo #{id} cant't be removed.");
             }

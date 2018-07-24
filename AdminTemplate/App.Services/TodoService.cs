@@ -9,21 +9,21 @@ namespace App.Services
 {
     internal class TodoService : Interfaces.ITodoService
     {
-        private readonly ITodoRepository repository;
+        private readonly IBaseRepository<Todo> repository;
 
-        public TodoService(ITodoRepository rep)
+        public TodoService(IBaseRepository<Todo> rep)
         {
             this.repository = rep;
         }
 
-        public TodoDto Create(TodoDto todo)
+        public TodoDto Create(TodoDto dto)
         {
-            return repository.Create(todo.MapTo<Todo>()).MapTo<TodoDto>();
+            return repository.Create(dto.MapTo<Todo>()).MapTo<TodoDto>();
         }
 
-        public bool Delete(int id)
+        public bool Delete(TodoDto dto)
         {
-            return repository.Delete(id);
+            return repository.Delete(dto.MapTo<Todo>());
         }
 
         public TodoDto GetById(int id)
@@ -33,7 +33,7 @@ namespace App.Services
 
         public IEnumerable<TodoDto> List(TodoFilterDto filter)
         {
-            return repository.List(filter.MapTo<TodoFilter>()).EnumerableTo<TodoDto>();
+            return repository.List(new BaseFilter()).EnumerableTo<TodoDto>();
         }
 
         public bool Update(TodoDto todo)
