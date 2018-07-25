@@ -10,7 +10,7 @@ namespace App.Data.Repositories
 {
     internal class RepositoryBase<T> where T : BaseEntity
     {
-        private const string CONNECTIONSTRING_KEY = "ConnectionString";
+        private const string CONNECTIONSTRING_KEY = "ConnectionString:DefaultConnection";
 
         protected SqlConnection connection;
 

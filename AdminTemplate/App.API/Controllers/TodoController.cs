@@ -3,17 +3,29 @@ using App.Results;
 using App.Services.Dtos;
 using App.Services.Interfaces;
 using App.Validators;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Filters;
 using System;
 using System.Collections.Generic;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
-namespace App.Controllers
+namespace App.API.Controllers
 {
+    [Authorize]
     [Route("api/[controller]")]
     public class TodoController : Controller
     {
+
+        public override void OnActionExecuting(ActionExecutingContext context)
+        {
+            base.OnActionExecuting(context);
+            var isAuth = context.HttpContext.User.Identity.IsAuthenticated;
+            var claims = context.HttpContext.User.Claims;
+        }
+
+
         private readonly ITodoService appService;
         private readonly AppValidator validator;
 
@@ -25,7 +37,7 @@ namespace App.Controllers
 
         // GET: api/todo
         [HttpGet]
-        public GenericResult<IEnumerable<TodoDto>> Get([FromQuery]TodoFilterDto filter)
+        public IActionResult Get([FromQuery]TodoFilterDto filter)
         {
             var result = new GenericResult<IEnumerable<TodoDto>>();
             try
@@ -37,12 +49,12 @@ namespace App.Controllers
             {
                 result.Errors = new string[] { ex.Message };
             }
-            return result;
+            return Ok(result);
         }
 
         // GET api/todo/5
         [HttpGet("{id}")]
-        public GenericResult<TodoDto> Get(int id)
+        public IActionResult Get(int id)
         {
             var result = new GenericResult<TodoDto>();
 
@@ -58,12 +70,12 @@ namespace App.Controllers
                 result.Errors = new string[] { ex.Message };
             }
 
-            return result;
+            return Ok(result);
         }
 
         // POST api/todo
         [HttpPost]
-        public GenericResult<TodoDto> Post([FromBody]TodoDto model)
+        public IActionResult Post([FromBody]TodoDto model)
         {
             var result = new GenericResult<TodoDto>();
             var validatorResult = validator.Validate(model);
@@ -83,12 +95,12 @@ namespace App.Controllers
             else
                 result.Errors = validatorResult.GetErrors();
 
-            return result;
+            return Ok(result);
         }
 
         // PUT api/todo/5
         [HttpPut]
-        public GenericResult Put([FromBody]TodoDto model)
+        public IActionResult Put([FromBody]TodoDto model)
         {
             var result = new GenericResult();
             var validatorResult = validator.Validate(model);
@@ -109,12 +121,12 @@ namespace App.Controllers
             else
                 result.Errors = validatorResult.GetErrors();
 
-            return result;
+            return Ok(result);
         }
 
         // DELETE api/todo/5
         [HttpDelete("{id}")]
-        public GenericResult Delete(int id)
+        public IActionResult Delete(int id)
         {
             var result = new GenericResult();
             try
@@ -127,7 +139,7 @@ namespace App.Controllers
             {
                 result.Errors = new string[] { ex.Message };
             }
-            return result;
+            return Ok(result);
         }
     }
 }

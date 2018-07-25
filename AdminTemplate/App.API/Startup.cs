@@ -1,8 +1,11 @@
-﻿using Microsoft.AspNetCore.Builder;
+﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.IdentityModel.Tokens;
 using Swashbuckle.AspNetCore.Swagger;
+using System.Text;
 
 namespace App.API
 {
@@ -18,15 +21,33 @@ namespace App.API
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            IoC.IoCConfiguration.Configure(services);
+            App.IoC.IoCConfiguration.Configure(services);
 
             services.AddSingleton(Configuration);
             services.AddScoped<Validators.AppValidator>();
 
             Mappings.AutoMapperConfiguration.Initialize();
 
-            var pathToDoc = Configuration["Swagger:Path"];
+            services.AddAuthentication(op =>
+            {
+                op.DefaultAuthenticateScheme = op.DefaultChallengeScheme =
+                op.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+            })
+            .AddJwtBearer(op =>
+            {
+                op.SaveToken = true;
+                op.RequireHttpsMetadata = true;
+                op.TokenValidationParameters = new TokenValidationParameters()
+                {
+                    ValidateIssuer = true,
+                    ValidateAudience = true,
+                    ValidIssuer = Configuration["Auth:IssuerPath"],
+                    ValidAudience = Configuration["Auth:AudiencePath"],
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["Auth:AppKey"]))
+                };
+            });
 
+            var pathToDoc = Configuration["Swagger:Path"];
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new Info { Title = "App API", Version = "v1" });
@@ -53,12 +74,13 @@ namespace App.API
 
             app.UseStaticFiles();
             app.UseCors("AllowAllOrigin");
+            app.UseAuthentication();
 
             app.UseMvc(routes =>
             {
                 routes.MapRoute(
                     name: "default",
-                    template: "{controller=Home}/{action=Index}/{id?}");
+                    template: "{controller}/{action}/{id?}");
             });
 
 
